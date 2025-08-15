@@ -4,7 +4,7 @@ const Header = ({ text }) => <h1>{text}</h1>
 
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
-const StatisticsLine = ({ text, value } ) => <p>{text} {value}</p>
+const StatisticsLine = ({ text, value } ) => <tr><td>{text}</td><td>{value}</td></tr>
 
 const Statistics = ({ good, neutral, bad }) => {
   const total = good + neutral + bad
@@ -16,14 +16,16 @@ const Statistics = ({ good, neutral, bad }) => {
   }
 
   return (
-    <div>
-      <StatisticsLine text='good' value={good} />
-      <StatisticsLine text='neutral' value={neutral} />
-      <StatisticsLine text='bad' value={bad} />
-      <StatisticsLine text='all' value={total} />
-      <StatisticsLine text='average' value={(good - bad) / total} />
-      <StatisticsLine text='positive' value={good / total * 100} />
-    </div>
+    <table>
+      <tbody>
+        <StatisticsLine text='good' value={good} />
+        <StatisticsLine text='neutral' value={neutral} />
+        <StatisticsLine text='bad' value={bad} />
+        <StatisticsLine text='all' value={total} />
+        <StatisticsLine text='average' value={(good - bad) / total} />
+        <StatisticsLine text='positive' value={`${good / total * 100}%`} />
+      </tbody>
+    </table>
   )
 }
 
