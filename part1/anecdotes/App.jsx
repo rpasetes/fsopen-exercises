@@ -19,11 +19,8 @@ const App = () => {
   const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0))
 
   const handleVote = () => {
-    // console.log('vote tally:', votes)
-    // console.log('adding vote to quote with idx', selected)
     const newVotes = [...votes]
     newVotes[selected] += 1
-    // console.log('new vote tally:', newVotes)
     setVotes(newVotes)
   }
   
@@ -31,9 +28,7 @@ const App = () => {
     let randomIndex = selected
     while (randomIndex == selected) {
       randomIndex = Math.floor(Math.random() * anecdotes.length)
-      // console.log('generating new index', randomIndex, 'with selected', selected)
     }
-    // console.log('not the same! now we change...')
     setSelected(randomIndex)
   }
 
