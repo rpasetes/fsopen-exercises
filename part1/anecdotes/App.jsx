@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Random = ({ onClick }) => <button onClick={onClick}>next anecdote</button>
+const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
 const App = () => {
   const anecdotes = [
@@ -15,14 +15,24 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0))
 
-  const handleClick = () => {
+  const handleVote = () => {
+    // console.log('vote tally:', votes)
+    // console.log('adding vote to quote with idx', selected)
+    const newVotes = [...votes]
+    newVotes[selected] += 1
+    // console.log('new vote tally:', newVotes)
+    setVotes(newVotes)
+  }
+  
+  const handleRandom = () => {
     let randomIndex = selected
     while (randomIndex == selected) {
       randomIndex = Math.floor(Math.random() * anecdotes.length)
-      console.log('generating new index', randomIndex, 'with selected', selected)
+      // console.log('generating new index', randomIndex, 'with selected', selected)
     }
-    console.log('not the same! now we change...')
+    // console.log('not the same! now we change...')
     setSelected(randomIndex)
   }
 
@@ -31,7 +41,9 @@ const App = () => {
       <div>
         {anecdotes[selected]}
       </div>
-      <Random onClick={handleClick} />
+      <div>has {votes[selected]} votes</div>
+      <Button onClick={handleVote} text={'vote'} />
+      <Button onClick={handleRandom} text={'next anecdote'} />
     </div>
   )
 }
