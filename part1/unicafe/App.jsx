@@ -6,12 +6,17 @@ const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
 const Stat = ({ text, number } ) => <p>{text} {number}</p>
 
-const Statistics = (props) => {
+const Statistics = ({ good, neutral, bad }) => {
+  const total = good + neutral + bad
+
   return (
     <div>
-      <Stat text='good' number={props.good} />
-      <Stat text='neutral' number={props.neutral} />
-      <Stat text='bad' number={props.bad} />
+      <Stat text='good' number={good} />
+      <Stat text='neutral' number={neutral} />
+      <Stat text='bad' number={bad} />
+      <Stat text='all' number={total} />
+      <Stat text='average' number={(good - bad) / total} />
+      <Stat text='positive' number={good / total} />
     </div>
   )
 }
