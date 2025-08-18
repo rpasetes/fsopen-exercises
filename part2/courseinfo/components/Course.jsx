@@ -1,4 +1,4 @@
-const Header = ({ name }) => <h1>{name}</h1>
+const Title = ({ name }) => <h2>{name}</h2>
 
 const Part = ({ name, exercises }) => <p>{name} {exercises}</p>
 
@@ -12,8 +12,6 @@ const Content = ({ parts }) => {
 }
 
 const Total = ({ parts }) => {
-  // console.log('totalling parts', parts)
-  
   return (
     <p>
       <b>
@@ -24,11 +22,9 @@ const Total = ({ parts }) => {
 }
 
 const Course = ({ course }) => {
-  // console.log('inheriting course', course);
-  
   return (
     <div>
-      <Header name={course.name} />
+      <Title name={course.name} />
       <Content parts={course.parts} />
       <Total parts={course.parts} />
     </div>
