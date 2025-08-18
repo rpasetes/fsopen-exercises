@@ -1,22 +1,7 @@
 import { useState } from 'react'
 import Filter from './components/Filter'
 import ContactForm from './components/ContactForm'
-
-const Contact = ({ person }) => {
-  return (
-    <div>
-      {person.name} {person.number}
-    </div>
-  )
-}
-
-const Contacts = ({ persons }) => {
-  return (
-    <div>
-      {persons.map((person) => <Contact key={person.id} person={person} />)}
-    </div>
-  )
-}
+import Contacts from './components/Contacts'
 
 // (13:35) refactoring: leave all state + event handlers in App
 const App = () => {
@@ -43,7 +28,6 @@ const App = () => {
   }
 
   const filteredPersons = persons.filter((person) => {
-    const lowerName = person.name.toLowerCase()
     return person.name.toLowerCase().startsWith(filter)
   })
 
