@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-// (12:50) aight new contact component,
-// let's see if the changes propagate.
 const Contact = ({ person }) => {
   return (
     <div>
@@ -11,7 +9,6 @@ const Contact = ({ person }) => {
 }
 
 const Contacts = ({ persons }) => {
-  // (12:52) remember: set 'key' prop in the map()
   return (
     <div>
       {persons.map((person) => <Contact key={person.id} person={person} />)}
@@ -20,16 +17,18 @@ const Contacts = ({ persons }) => {
 }
 
 const App = () => {
-  // (12:47) okay now we adding numbers,
-  // gotta update Contacts display
-  const [persons, setPersons] = useState([{
-    id: 1, 
-    name: 'Arto Hellas', 
-    number: '040-1234567',
-  }])
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '040-123456', id: 1 },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
+  ])
   const [newName, setNewName] = useState('type new name...')
-  // (12:44) yea we adding numbers now bb
   const [newNumber, setNewNumber] = useState('type new number...')
+  // (13:31) surprised that there's no error msg for an
+  // uncontrolled component, but hey, even an empty string
+  // is controlled (according to gemini search).
+  const [filter, setFilter] = useState('')
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -39,7 +38,26 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  // check for existing names here
+  // (13:15) aight new filter who dis
+  const handleFilterChange = (event) => {
+    console.log('updating filter to', event.target.value)
+    setFilter(event.target.value)
+  }
+
+  // (13:21) okay now i'm wondering if filtering
+  // for starting at an empty string will always be true...
+  // (13:29) the answer is Yes. all the contacts are displaying,
+  const filteredPersons = persons.filter((person) => {
+    const lowerName = person.name.toLowerCase()
+    console.log(lowerName)
+    console.log(`starts with ${filter}? ${lowerName.startsWith(filter)}`)
+    // (13:28) Remember: return multiline arrow functions
+    // for array operations. how else will the data update?
+    return person.name.toLowerCase().startsWith(filter)
+  })
+
+  console.log(filteredPersons)
+
   const onSubmit = (event) => {
     event.preventDefault()
 
@@ -48,9 +66,6 @@ const App = () => {
       return
     }
 
-    // (12:53) aight, new object formed with
-    // the field change, now saving to check...
-    // (12:55) phew 1-800-smackeditup,
     const newPerson = {
       id: String(persons.length + 1),
       name: newName,
@@ -65,6 +80,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      filter shown with <input
+        onChange={handleFilterChange}
+      />
+      <h2>add a new</h2>
       <form onSubmit={onSubmit}>
         <div>
           name: <input 
@@ -83,7 +102,7 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      <Contacts persons={persons} />
+      <Contacts persons={filteredPersons} />
     </div>
   )
 }
