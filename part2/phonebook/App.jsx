@@ -4,13 +4,6 @@ import ContactForm from './components/ContactForm'
 import Contacts from './components/Contacts'
 import axios from 'axios'
 
-// (13:27) GAME PLAN:
-// > set persons to empty array (nice)
-// > make fetch hook under state (nice)
-// > remember to import axios to get db data
-// > then remember to import useEffect (lmao)
-// DONE AT (13:33)
-// FULL FUNCTIONALITY WORKING AT (13:34)
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('type new name...')
@@ -18,11 +11,9 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
     axios
       .get('http://localhost:3001/persons')
       .then((response) => {
-        console.log('fetch success', response)
         setPersons(response.data)
       })
   }, [])
@@ -57,9 +48,16 @@ const App = () => {
       number: newNumber,
     }
 
-    setPersons(persons.concat(newPerson))
-    setNewName('')
-    setNewNumber('')
+    axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then(response => {
+        console.log(response.data)
+        // (16:47) u still append response to state, since 201
+        // updates with only the new number, not all persons
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   return (
