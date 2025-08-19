@@ -10,7 +10,6 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('type new number...')
   const [filter, setFilter] = useState('')
 
-  // (16:57) hell yea first service down!
   useEffect(() => {
     contactService
       .getAll()
@@ -43,18 +42,12 @@ const App = () => {
       return
     }
 
-    // (17:01) oh! good catch on removing id here
-    // since it's set by the json-server
     const newPerson = {
       name: newName,
       number: newNumber,
     }
 
     contactService
-      // (17:02) ohh.. and update the function to
-      // only pass the json since the url is set
-      // by the service. tyty console 500 err stack
-      // (17:04) beautiful! submitting works now
       .create(newPerson)
       .then(returnedPerson => {
         console.log(returnedPerson)
@@ -62,6 +55,22 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
+  }
+
+  // (17:34) confirm dialog success! returns boolean
+  // (17:40) fuck yea, the promise chain works!
+  const removeContact = (person) => {
+    if (window.confirm(`delete ${person.name}?`)) {
+      console.log(`removing ${person.name}`)
+      contactService
+        .remove(person.id)
+        .then(deletedContact => {
+          setPersons(persons.filter(person => person.id !== deletedContact.id))
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
   }
 
   return (
@@ -77,7 +86,10 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Contacts persons={filteredPersons} />
+      <Contacts 
+        persons={filteredPersons}
+        removeContact={removeContact}
+      />
     </div>
   )
 }
