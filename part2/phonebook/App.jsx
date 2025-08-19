@@ -1,19 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import ContactForm from './components/ContactForm'
 import Contacts from './components/Contacts'
+import axios from 'axios'
 
-// (13:35) refactoring: leave all state + event handlers in App
+// (13:27) GAME PLAN:
+// > set persons to empty array (nice)
+// > make fetch hook under state (nice)
+// > remember to import axios to get db data
+// > then remember to import useEffect (lmao)
+// DONE AT (13:33)
+// FULL FUNCTIONALITY WORKING AT (13:34)
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('type new name...')
   const [newNumber, setNewNumber] = useState('type new number...')
   const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then((response) => {
+        console.log('fetch success', response)
+        setPersons(response.data)
+      })
+  }, [])
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
