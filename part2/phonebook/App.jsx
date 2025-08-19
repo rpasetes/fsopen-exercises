@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import ContactForm from './components/ContactForm'
 import Contacts from './components/Contacts'
-import axios from 'axios'
+import contactService from './services/contacts'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -10,11 +10,12 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('type new number...')
   const [filter, setFilter] = useState('')
 
+  // (16:57) hell yea first service down!
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then((response) => {
-        setPersons(response.data)
+    contactService
+      .getAll()
+      .then(initialContacts => {
+        setPersons(initialContacts)
       })
   }, [])
 
@@ -42,19 +43,22 @@ const App = () => {
       return
     }
 
+    // (17:01) oh! good catch on removing id here
+    // since it's set by the json-server
     const newPerson = {
-      id: String(persons.length + 1),
       name: newName,
       number: newNumber,
     }
 
-    axios
-      .post('http://localhost:3001/persons', newPerson)
-      .then(response => {
-        console.log(response.data)
-        // (16:47) u still append response to state, since 201
-        // updates with only the new number, not all persons
-        setPersons(persons.concat(response.data))
+    contactService
+      // (17:02) ohh.. and update the function to
+      // only pass the json since the url is set
+      // by the service. tyty console 500 err stack
+      // (17:04) beautiful! submitting works now
+      .create(newPerson)
+      .then(returnedPerson => {
+        console.log(returnedPerson)
+        setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
       })
