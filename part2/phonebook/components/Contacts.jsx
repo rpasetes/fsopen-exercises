@@ -1,6 +1,3 @@
-// (17:11) hmm the button isn't showing up
-// (17:11) omg Remember: return the component!
-// (17:28) for taste, putting arrow f'n at onClick
 const DeleteContact = ({ person, removeContact }) => {
   return (
     <button onClick={() => removeContact(person)}>

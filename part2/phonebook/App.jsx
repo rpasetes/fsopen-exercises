@@ -37,14 +37,34 @@ const App = () => {
   const onSubmit = (event) => {
     event.preventDefault()
 
-    if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
-
     const newPerson = {
       name: newName,
       number: newNumber,
+    }
+
+    // (17:57) ugh have to rescue the data out of the match
+    // (17:59) yea figured i need to unwrap the array from
+    // the filtered object, now i can make the call
+    // (18:08) yoo almost made it first try, but i needed
+    // to map person.name to match*.name* after the update
+    // (18:09) LFG that was a great catch, frontend updated! 
+    if (persons.some((person) => person.name === newName)) {
+      const match = persons.filter(person => person.name === newName)[0]
+      if (confirm(`${match.name} is already added to phonebook, 
+        replace the old number with a new one?`)) {
+          console.log(`updating ${match.name} to ${newNumber}`)
+          contactService
+            .update(match.id, newPerson)
+            .then(returnedPerson => {
+              console.log(`update response:`, returnedPerson)
+              setPersons(persons.map(person => person.name === match.name ? returnedPerson : person))
+              setNewName('')
+              setNewNumber('')
+            }).catch(error => {
+              console.log(error)
+            })
+        }
+      return
     }
 
     contactService
@@ -57,10 +77,8 @@ const App = () => {
       })
   }
 
-  // (17:34) confirm dialog success! returns boolean
-  // (17:40) fuck yea, the promise chain works!
   const removeContact = (person) => {
-    if (window.confirm(`delete ${person.name}?`)) {
+    if (confirm(`delete ${person.name}?`)) {
       console.log(`removing ${person.name}`)
       contactService
         .remove(person.id)

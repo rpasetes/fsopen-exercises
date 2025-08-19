@@ -1,4 +1,3 @@
-// (16:52) okay time to actually write all this
 import axios from 'axios'
 
 const baseUrl = 'http://localhost:3001/persons'
@@ -18,5 +17,11 @@ const remove = id => {
   return request.then(response => response.data)
 }
 
-// (17:29) okay, time to export remove to App
-export default { getAll, create, remove }
+// (17:45) remember: put targets the resource's id url
+// (18:02) okay now i send the updated object to server
+const update = (id, newObject) => {
+  const request = axios.put(`${baseUrl}/${id}`, newObject)
+  return request.then(response => response.data)
+}
+
+export default { getAll, create, remove, update }
