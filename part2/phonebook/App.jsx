@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
+// (04:54) and since it wasn't exported, it imported 
+// <Notification /> from another projcet lmaoo
+import Notification from './components/Notification'
 import ContactForm from './components/ContactForm'
 import Contacts from './components/Contacts'
 import contactService from './services/contacts'
@@ -9,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('type new name...')
   const [newNumber, setNewNumber] = useState('type new number...')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     contactService
@@ -42,12 +46,6 @@ const App = () => {
       number: newNumber,
     }
 
-    // (17:57) ugh have to rescue the data out of the match
-    // (17:59) yea figured i need to unwrap the array from
-    // the filtered object, now i can make the call
-    // (18:08) yoo almost made it first try, but i needed
-    // to map person.name to match*.name* after the update
-    // (18:09) LFG that was a great catch, frontend updated! 
     if (persons.some((person) => person.name === newName)) {
       const match = persons.filter(person => person.name === newName)[0]
       if (confirm(`${match.name} is already added to phonebook, 
@@ -74,6 +72,11 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
+        // (04:47) notif displaying successfully! now to style,
+        setMessage(`Added ${returnedPerson.name}`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
   }
 
@@ -94,6 +97,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter onChange={handleFilterChange} />
       <h3>add a new</h3>
       <ContactForm

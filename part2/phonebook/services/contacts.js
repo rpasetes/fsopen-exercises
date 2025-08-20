@@ -17,8 +17,6 @@ const remove = id => {
   return request.then(response => response.data)
 }
 
-// (17:45) remember: put targets the resource's id url
-// (18:02) okay now i send the updated object to server
 const update = (id, newObject) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject)
   return request.then(response => response.data)
