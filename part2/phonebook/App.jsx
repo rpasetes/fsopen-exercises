@@ -60,6 +60,13 @@ const App = () => {
               setNewNumber('')
             }).catch(error => {
               console.log(error)
+              // (09:21) beautiful, error displayed successfully!
+              // (09:29) now for funsies, allow the error to remove dead data
+              setMessage(`Information of ${match.name} has already been removed from server`)
+              setPersons(persons.filter(person => person.name !== match.name))
+              setTimeout(() => {
+                setMessage(null)
+              }, 5000)
             })
         }
       return
@@ -88,8 +95,16 @@ const App = () => {
         .then(deletedContact => {
           setPersons(persons.filter(person => person.id !== deletedContact.id))
         })
+        // (09:27) huh, guess i can catch an error here too...
+        // (09:34) dead data filtered, code specific to function
+        // man, i Know how to code. proud of myself.
         .catch(error => {
           console.log(error)
+          setMessage(`Information of ${match.name} has already been removed from server`)
+          setPersons(persons.filter(p => p.name !== person.name))
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
     }
   }
