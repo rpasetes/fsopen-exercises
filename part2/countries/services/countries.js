@@ -17,7 +17,6 @@ const getAll = (search) => {
 const getCountryData = (country) => {
   const request = axios.get(`${baseUrl}/name/${country}`)
   return request.then(response => {
-    console.log(response.data)
     return response.data
   })
 }
