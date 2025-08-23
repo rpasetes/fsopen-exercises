@@ -1,6 +1,9 @@
-// (1045) commonjs require module for node, 
-// es6 import modules for browser 
-const http = require('http')
+// (1106) functionality mainly unchanged, good to
+// notice structural contrast of http vs express
+
+// const http = require('http')
+const express = require('express')
+const app = express()
 
 let notes = [
   {
@@ -20,14 +23,23 @@ let notes = [
   }
 ]
 
-// (1046) server displays same content regardless of latter url
-const app = http.createServer((request, response) => {
-  // response.writeHead(200, { 'Content-Type': 'text/plain' }) // header
-  // response.end('Hello World')                               // content
-  response.writeHead(200, { 'Content-Type': 'application/json' })
-  response.end(JSON.stringify(notes))
+// const app = http.createServer((request, response) => {
+//   response.writeHead(200, { 'Content-Type': 'application/json' })
+//   response.end(JSON.stringify(notes))
+// })
+
+// (1108) ayo, routes established in .get() first param
+app.get('/', (request, response) => {
+  response.send('<h1>Hello World!</h1>')
+})
+
+app.get('/api/notes', (request, response) => {
+  response.json(notes)
 })
 
 const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
+// app.listen(PORT)
+// console.log(`Server running on port ${PORT}`)
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
