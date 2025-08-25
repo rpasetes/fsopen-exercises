@@ -41,7 +41,6 @@ app.delete('/api/notes/:id', (req, res) => {
   const id = req.params.id
   notes.filter(note => note.id === id)
 
-  // (1341) in this case, task can also fail successfully,
   res.status(204).end()
 })
 
