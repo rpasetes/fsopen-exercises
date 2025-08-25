@@ -1,8 +1,11 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
-// (1228) okay first things first, json request middleware
 app.use(express.json())
+// (1758) lmao we have to set up here too, let's see what pops up
+// (1759) aight easy enough it prints, next; to configure... ship!
+app.use(morgan('tiny'))
 
 contacts = [
   { 
@@ -64,11 +67,6 @@ const generateId = () => {
   return String(Math.floor(Math.random() * (ceil - floor) + floor))
 } 
 
-// (1310) okay yea for both cases, we're responding a 400 bad request
-// (1311) AND returning appropriate json to explain error reasoning
-// (1316) INTERESTING, hanging commas in json requests is a syntax error!
-// (1324) WHOA WEIRD, unique name bug just went away w/o me knowing how,,
-// (1326) aight sweet, both errors are being handled, lgtm, ship!
 app.post('/api/persons', (request, response) => {
   const body = request.body
   
