@@ -40,22 +40,26 @@ app.get('/api/persons', (request, response) => {
   response.json(contacts)
 })
 
-// (1124) remember: get id from request.params!
-// (1127) whoops. missing forward slash before api, sneaky...
-// (1128) wow, resource get success! great typo catch, 
-// (1130) huh missing .end() after error status responds with 304...
-// (1134) ohh, if there's nothing to catch w/ the filter, the array
-// is still going to exist! that's why we find() the resoure instead
-// (1138) okay cool, functionality working as intended. differing w/
-// fsopen material by returning the 404 status instead of if-elsing...
-// (1144) aight cleaning up here, but should be ready to checkpoint!
 app.get('/api/persons/:id', (request, response) => {
   const id = request.params.id
   const contact = contacts.find(c => c.id === id)
-  console.log('finding contact', contact)
 
   if (!contact) { return response.status(404).end() }
   response.json(contact)
+})
+
+// (1212) aight we back, n'yea lul u can just overwrite contacts
+// (1214) and end the response status with 204, lul again
+// (1215) meta: retain both material and exercises within 24 hrs
+// (1218) whoops, filtered all contacts BUT id param haha (used ===)
+// (1219) nice, rest client deletes the number! thx console.log()
+// (1222) and it can take multiple delete requests heck yea! ship
+app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  contacts = contacts.filter(c => c.id !== id)
+
+  response.status(204).end()
+  console.log(contacts)
 })
 
 const PORT = 3001
