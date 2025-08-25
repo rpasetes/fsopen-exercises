@@ -1,7 +1,10 @@
+// (1738) Remember: quit all prior backend servers!
+// tbh kinda surprised i didn't encounter any errors/conflicts wtf
+// actually, that makes sense, localhosting one after another...
+// no wait, it doesn't make much sense. honestly would've gotten
+// tipped off when the root html element didn't change. oh well,
 const express = require('express')
 const app = express()
-
-app.use(express.json())
 
 let notes = [
   {
@@ -21,8 +24,23 @@ let notes = [
   }
 ]
 
+console.log(notes)
+
+// (1741) all middleware has req, res, and next
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path  :', request.path)
+  console.log('Body  :', request.body)
+  console.log('---')
+  next()
+}
+
+// (1727) requestLogger used after json-parser for request.body
+app.use(express.json())
+app.use(requestLogger)
+
 app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
+  response.send('<h1>Hello Notes!</h1>')
 })
 
 app.get('/api/notes', (request, response) => {
@@ -71,6 +89,13 @@ app.delete('/api/notes/:id', (req, res) => {
 
   res.status(204).end()
 })
+
+// (1730) adding after routes if requests w undef endpoints caught
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {
