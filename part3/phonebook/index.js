@@ -3,12 +3,19 @@ const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
-// (1758) lmao we have to set up here too, let's see what pops up
-// (1759) aight easy enough it prints, next; to configure... ship!
-app.use(morgan('tiny'))
+
+morgan.token('body', (req, res) => { 
+  // (1811) and here's doing it in the JSON.stringify way.
+  // which way, modern man? (well ig technically its using both)
+  return JSON.stringify(req.body)
+  // (1810) okay yea here's doing it the deconstructy way
+  // const body = req.body
+  // return `{"name":"${body.name}","number":"${body.number}"}`
+})
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 contacts = [
-  { 
+  {
     "id": "1",
     "name": "Arto Hellas", 
     "number": "040-123456"
