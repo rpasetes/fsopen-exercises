@@ -1,10 +1,16 @@
-// (1738) Remember: quit all prior backend servers!
-// tbh kinda surprised i didn't encounter any errors/conflicts wtf
-// actually, that makes sense, localhosting one after another...
-// no wait, it doesn't make much sense. honestly would've gotten
-// tipped off when the root html element didn't change. oh well,
 const express = require('express')
 const app = express()
+
+// (1153) configuring to accept frontend origin
+// (1155) lmao caught myself running the exercise backend, AGAIN
+// (1156) fuck yea we got cors running BAYBEE
+const cors = require('cors')
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions))
 
 let notes = [
   {
@@ -26,7 +32,6 @@ let notes = [
 
 console.log(notes)
 
-// (1741) all middleware has req, res, and next
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path  :', request.path)
@@ -35,7 +40,6 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-// (1727) requestLogger used after json-parser for request.body
 app.use(express.json())
 app.use(requestLogger)
 
@@ -90,7 +94,6 @@ app.delete('/api/notes/:id', (req, res) => {
   res.status(204).end()
 })
 
-// (1730) adding after routes if requests w undef endpoints caught
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
