@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "echo \"Error: not test specified\" && exit 1"
+    "test": "echo \"Error: not test specified\" && exit 1",
+    "build:ui": "rm -rf dist && cd ../../frontend-sandbox && npm run build && cp -r dist ../fsopen-exercises/part3",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "author": "Russell Pasetes",
   "license": "MIT",
