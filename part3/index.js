@@ -1,9 +1,11 @@
 const express = require('express')
 const app = express()
 
-// (1153) configuring to accept frontend origin
-// (1155) lmao caught myself running the exercise backend, AGAIN
-// (1156) fuck yea we got cors running BAYBEE
+// (1046) static content middleware hosts 'dist' frontend build
+// (1048) kinda wild that u can do this tbh
+// (1056) OMFG Remember!! close all other servers b4 u update
+app.use(express.static('dist'))
+
 const cors = require('cors')
 const corsOptions = {
   origin: 'http://localhost:5173',
@@ -43,9 +45,11 @@ const requestLogger = (request, response, next) => {
 app.use(express.json())
 app.use(requestLogger)
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello Notes!</h1>')
-})
+// (1051) okay wait since we have the static content middleware,
+// we don't need this endpoint handled anymore
+// app.get('/', (request, response) => {
+//   response.send('<h1>Hello Notes!</h1>')
+// })
 
 app.get('/api/notes', (request, response) => {
   response.json(notes)
@@ -100,7 +104,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
