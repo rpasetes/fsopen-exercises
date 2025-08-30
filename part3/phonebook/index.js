@@ -2,7 +2,9 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
-// (1041) phew npm install cors success!
+// (1233) adding after running part2> cp -r dist ../part3/phonebook
+app.use(express.static('dist'))
+
 const cors = require('cors')
 const corsOptions = {
   host: 'http://localhost:5173',
