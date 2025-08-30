@@ -2,15 +2,18 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
+// (1041) phew npm install cors success!
+const cors = require('cors')
+const corsOptions = {
+  host: 'http://localhost:5173',
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions))
+
 app.use(express.json())
 
 morgan.token('body', (req, res) => { 
-  // (1811) and here's doing it in the JSON.stringify way.
-  // which way, modern man? (well ig technically its using both)
   return JSON.stringify(req.body)
-  // (1810) okay yea here's doing it the deconstructy way
-  // const body = req.body
-  // return `{"name":"${body.name}","number":"${body.number}"}`
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
@@ -76,6 +79,7 @@ const generateId = () => {
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
+  console.log('receiving request data:', body)
   
   if (!body.name || !body.number) {
     return response.status(400).json({
@@ -94,8 +98,6 @@ app.post('/api/persons', (request, response) => {
     name: body.name,
     number: body.number,
   }
-
-  // console.log('creating new contact', contact)
 
   contacts = contacts.concat(contact)
   response.json(contact)

@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
-// (04:54) and since it wasn't exported, it imported 
-// <Notification /> from another projcet lmaoo
 import Notification from './components/Notification'
 import ContactForm from './components/ContactForm'
 import Contacts from './components/Contacts'
@@ -60,8 +58,6 @@ const App = () => {
               setNewNumber('')
             }).catch(error => {
               console.log(error)
-              // (09:21) beautiful, error displayed successfully!
-              // (09:29) now for funsies, allow the error to remove dead data
               setMessage(`Information of ${match.name} has already been removed from server`)
               setPersons(persons.filter(person => person.name !== match.name))
               setTimeout(() => {
@@ -79,7 +75,6 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
-        // (04:47) notif displaying successfully! now to style,
         setMessage(`Added ${returnedPerson.name}`)
         setTimeout(() => {
           setMessage(null)
@@ -92,12 +87,17 @@ const App = () => {
       console.log(`removing ${person.name}`)
       contactService
         .remove(person.id)
-        .then(deletedContact => {
-          setPersons(persons.filter(person => person.id !== deletedContact.id))
+        // (1047) okay cool now we debugging backend communication...
+        // (1048) aight, so there's no id to filter in 'deletedContact',
+        // (1050) hmm so the backend isn't designed to respond a deleted
+        // id, so might as well just handle it here in the frontend...
+        // (1053) okay 204 delete success returned is enough confirmation
+        // might as well style it for fun... ehh let's do that later...
+        // (1055) honestly, this is good enough backend to frontend work, SHIP!
+        .then(() => {
+          // console.log('deleted contact from backend:', deletedContact)
+          setPersons(persons.filter(contact => contact.id !== person.id))
         })
-        // (09:27) huh, guess i can catch an error here too...
-        // (09:34) dead data filtered, code specific to function
-        // man, i Know how to code. proud of myself.
         .catch(error => {
           console.log(error)
           setMessage(`Information of ${match.name} has already been removed from server`)
