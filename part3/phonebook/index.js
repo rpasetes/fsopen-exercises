@@ -1,8 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
+const Person = require('./models/person')
 
-// (1233) adding after running part2> cp -r dist ../part3/phonebook
 app.use(express.static('dist'))
 
 const cors = require('cors')
@@ -19,29 +20,29 @@ morgan.token('body', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-contacts = [
-  {
-    "id": "1",
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": "2",
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": "3",
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": "4",
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  }
-]
-console.log(contacts)
+// contacts = [
+//   {
+//     "id": "1",
+//     "name": "Arto Hellas", 
+//     "number": "040-123456"
+//   },
+//   { 
+//     "id": "2",
+//     "name": "Ada Lovelace", 
+//     "number": "39-44-5323523"
+//   },
+//   { 
+//     "id": "3",
+//     "name": "Dan Abramov", 
+//     "number": "12-43-234345"
+//   },
+//   { 
+//     "id": "4",
+//     "name": "Mary Poppendieck", 
+//     "number": "39-23-6423122"
+//   }
+// ]
+// console.log(contacts)
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
@@ -54,8 +55,13 @@ app.get('/info', (request, response) => {
   `)
 })
 
+// (1333) HOLY FARKING SHIP YEA WE GOT IT ON REST VSCODE
+// (1334) AND WE HAVE THE CONTACTS ON THE FRONTEND LFGGG
 app.get('/api/persons', (request, response) => {
-  response.json(contacts)
+  // response.json(contacts)
+  Person.find({}).then(people => {
+    response.json(people)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -106,7 +112,7 @@ app.post('/api/persons', (request, response) => {
   console.log('contacts updating to:', contacts)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
