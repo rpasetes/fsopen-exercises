@@ -1,9 +1,6 @@
 const express = require('express')
 const app = express()
 
-// (1046) static content middleware hosts 'dist' frontend build
-// (1048) kinda wild that u can do this tbh
-// (1056) OMFG Remember!! close all other servers b4 u update
 app.use(express.static('dist'))
 
 const cors = require('cors')
@@ -13,6 +10,35 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
+
+// (1215) having some auth problems with the cli password...
+// (1217) okay changing it to a simpler pw worked!
+const mongoose = require('mongoose')
+
+// DO NOT SAVE YOUR PASSWORD TO GITHUB!!
+const password = process.argv[2]
+console.log(password)
+const url = `mongodb+srv://russap01_db_user:${password}@cluster0.dccws8n.mongodb.net/noteApp?
+retryWrites=true&w=majority&appName=Cluster0`
+
+mongoose.set('strictQuery',false)
+mongoose.connect(url)
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  important: Boolean,
+})
+
+// (1235) modifying data shape for frontend
+noteSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
+
+const Note = mongoose.model('Note', noteSchema)
 
 let notes = [
   {
@@ -45,14 +71,10 @@ const requestLogger = (request, response, next) => {
 app.use(express.json())
 app.use(requestLogger)
 
-// (1051) okay wait since we have the static content middleware,
-// we don't need this endpoint handled anymore
-// app.get('/', (request, response) => {
-//   response.send('<h1>Hello Notes!</h1>')
-// })
-
 app.get('/api/notes', (request, response) => {
-  response.json(notes)
+  Note.find({}).then(notes => {
+    response.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (request, response) => {
