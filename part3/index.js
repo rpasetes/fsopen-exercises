@@ -1,9 +1,9 @@
-// (1253) REMEMBER: CHECK CONSOLE FOR RUNNING BACKEND INSTANCES
-// BEFORE DEPLOYING ANOTHER SERVER WITH NEW CHANGES
-// ONE CONSOLE FOR THE NODE INSTANCE
-// ONE CONSOLE FOR GIT AND NAVIGATION
-
+// (1258) dotenv imported before Note to retrieve MONGODB_URI
+// best practice to surface env vars before other imports
+require('dotenv').config()
 const express = require('express')
+const Note = require('./models/note')
+
 const app = express()
 
 app.use(express.static('dist'))
@@ -15,9 +15,6 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-
-// (1246) now importing from external module
-const Note = require('./models/note')
 
 let notes = [
   {
@@ -105,7 +102,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
