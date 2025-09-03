@@ -1,3 +1,8 @@
+// (1253) REMEMBER: CHECK CONSOLE FOR RUNNING BACKEND INSTANCES
+// BEFORE DEPLOYING ANOTHER SERVER WITH NEW CHANGES
+// ONE CONSOLE FOR THE NODE INSTANCE
+// ONE CONSOLE FOR GIT AND NAVIGATION
+
 const express = require('express')
 const app = express()
 
@@ -11,34 +16,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
-// (1215) having some auth problems with the cli password...
-// (1217) okay changing it to a simpler pw worked!
-const mongoose = require('mongoose')
-
-// DO NOT SAVE YOUR PASSWORD TO GITHUB!!
-const password = process.argv[2]
-console.log(password)
-const url = `mongodb+srv://russap01_db_user:${password}@cluster0.dccws8n.mongodb.net/noteApp?
-retryWrites=true&w=majority&appName=Cluster0`
-
-mongoose.set('strictQuery',false)
-mongoose.connect(url)
-
-const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
-})
-
-// (1235) modifying data shape for frontend
-noteSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-
-const Note = mongoose.model('Note', noteSchema)
+// (1246) now importing from external module
+const Note = require('./models/note')
 
 let notes = [
   {
