@@ -4,16 +4,7 @@ const Note = require('./models/note')
 
 const app = express()
 
-// (1419) also gonna delete cors from here on since our
-// proxy was already set up with our frontend dist build
-// const cors = require('cors')
-// const corsOptions = {
-//  origin: 'http://localhost:5173',
-//  optionsSuccessStatus: 200
-// }
-
-// app.use(cors(corsOptions))
-
+// (1422) okay for ordering middleware, dist first
 app.use(express.static('dist'))
 
 const requestLogger = (request, response, next) => {
@@ -24,6 +15,8 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+// (1423) then json parser immediately after, otherwise
+// the request logger can't access the body, left undef
 app.use(express.json())
 app.use(requestLogger)
 
@@ -33,9 +26,6 @@ app.get('/api/notes', (request, response) => {
   })
 })
 
-// (1417) ahh the middleware makes error handling much more
-// clean when separate from endpoint functionality, def gon
-// help me avoid that wrong endpoint snafu earlier lmao
 app.get('/api/notes/:id', (request, response, next) => {
   Note.findById(request.params.id)
     .then(note => {
@@ -67,27 +57,57 @@ app.post('/api/notes', (request, response) => {
   })
 })
 
-app.delete('/api/notes/:id', (request, response) => {
+// (1428) lmao Finally we get to delete records from our db 
+app.delete('/api/notes/:id', (request, response, next) => {
+  Note.findByIdAndDelete(request.params.id)
+    .then(result => {
+      // (1429) remember that 204 no content is appropriate code
+      // in both cases, where the outcome is a non-existent note
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+// (1431) great and now we can update records with put requests
+// (1441) WHOOP vscode rest success!
+// (1442) FRONTEND CRUD SUCCESS!!!
+// (1444) interesting to note tho how changing the dummy data 
+// ends up crashing the server and any put requests deletes the
+// data from the frontend, making it unclear if there's any
+// rewrites,, happening to the backend
+// (1452) but after checking, i feel like i can handle this
+// behavior by passing the error handler middleware at the end,
+// (1454) AND IT DOES! wow, such a useful technique! hell yeah.
+app.put('/api/notes/:id', (request, response, next) => {
+  // (1434) very cool to be using object spread syntax here
+  const { content, important } = request.body
+
   Note.findById(request.params.id)
-    // .then(note => {
-    //   if (note) {
-    //     response.json(note)
-    //   } else {
-    //     console.log('a 404 error should show up here')
-    //     response.status(404).send({ error: 'id not found' })
-    //   }
-    // })
-    // .catch(error => {
-    //   console.log(error)
-    //   response.status(400).send({ error: 'malformatted id' })
-    //   console.log('we have sent a response status')
-    // })
+    .then(note => {
+      if (!note) {
+        return response.status(404).end()
+      }
+
+      // (1435) this updates the fields to the db
+      note.content = content
+      note.important = important
+
+      // (1436) then gets saved and returned back to the frontend
+      // WHILE within the code that executes with a valid note id
+      // turns out this promise chain can be cleaned up w/ async,
+      return note.save().then((updatedNote) => {
+        response.json(updatedNote)
+      })
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
+// (1424) then unknown endpoint middleware loads only after
+// all other endpoints have been defined
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
@@ -100,6 +120,7 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
+// (1426) and finally, error handling sets up at the very end.
 app.use(errorHandler)
 
 const PORT = process.env.PORT
