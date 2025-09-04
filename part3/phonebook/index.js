@@ -7,7 +7,8 @@ const Person = require('./models/person')
 app.use(express.static('dist'))
 
 const cors = require('cors')
-const person = require('./models/person')
+// (1550) lmao idk wtf this is doing here
+// const person = require('./models/person')
 const corsOptions = {
   host: 'http://localhost:5173',
   optionsSuccessStatus: 200
@@ -21,9 +22,10 @@ morgan.token('body', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
-})
+// (1549) oh also deleting this now we have a frontend dist build
+// app.get('/', (request, response) => {
+//   response.send('<h1>Hello World!</h1>')
+// })
 
 app.get('/info', (request, response) => {
   response.send(`
@@ -32,10 +34,12 @@ app.get('/info', (request, response) => {
   `)
 })
 
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then(people => {
-    response.json(people)
-  })
+app.get('/api/persons', (request, response, next) => {
+  Person.find({})
+    .then(people => {
+      response.json(people)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -46,18 +50,13 @@ app.get('/api/persons/:id', (request, response) => {
   response.json(contact)
 })
 
-// (1536) filtering in mongoose starts with .find...()
-// (1539) will handle errors in next() (hehe) exercise,
-// but can just log the error to console for now...
-// (1541) looks like deleting Ada was persistent! SHIP 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
-      response.status(204).end()
-    })
-    .catch(error => 
-      console.error(error)
-    )
+  .then(result => {
+    response.status(204).end()
+  })
+    // (1552) yea boop so simple
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -69,13 +68,6 @@ app.post('/api/persons', (request, response) => {
       error: 'name or number missing'
     })
   }
-
-  // (1535) functionality suited for put request, will delete
-  // if (contacts.find(c => c.name === body.name)) {
-  //   return response.status(400).json({
-  //     error: 'name must be unique'
-  //   })
-  // }
   
   const person = new Person({
     name: body.name,
@@ -87,6 +79,21 @@ app.post('/api/persons', (request, response) => {
     response.json(people)
   })
 })
+
+// (1551) aight useful tech, set me up well for catching bugs;
+const errorHandler = (error, request, response, next) => {
+  console.error(error)
+
+  // (1547) will be useful for next exercise, changing
+  // all the '/api/person/:id' routes to access our db
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
