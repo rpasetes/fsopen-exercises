@@ -20,11 +20,23 @@ morgan.token('body', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-app.get('/info', (request, response) => {
-  response.send(`
-    <p>Phonebook has info for ${contacts.length} people</p>
-    <p>${new Date(Date.now())}</p>
-  `)
+// (1616) oh huh what are we gonna do for contact length...
+// (1617) ahh wait, just find all the entries, then shape
+// the response according to the result of the model call
+// (1620) YOOO and it works let's blaze it and SHIP
+app.get('/info', (request, response, next) => {
+  Person.find({})
+    .then(people => {
+      response.send(`
+        <p>Phonebook has info for ${people.length} people</p>
+        <p>${new Date(Date.now())}</p>
+      `)
+    })
+    .catch(error => error(next))
+  // response.send(`
+  //   <p>Phonebook has info for ${contacts.length} people</p>
+  //   <p>${new Date(Date.now())}</p>
+  // `)
 })
 
 app.get('/api/persons', (request, response, next) => {
@@ -56,12 +68,17 @@ app.post('/api/persons', (request, response) => {
   })
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const contact = contacts.find(c => c.id === id)
-
-  if (!contact) { return response.status(404).end() }
-  response.json(contact)
+// (1615) phew OMFG vscode rest request handling like BUTTER
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (!person) {
+        return response.status(404).end()
+      } else {
+        return response.json(person)
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -73,12 +90,10 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
-  // (1556) good catch! retrieving the updated data from body
   const { name, number } = request.body
   
   Person.findByIdAndUpdate(request.params.id)
     .then(person => {
-      // (1606) lmao oops put (!note) not (!person)
       if (!person) {
         return response.status(404).end()
       }
@@ -86,8 +101,6 @@ app.put('/api/persons/:id', (request, response, next) => {
       person.name = name
       person.number = number
 
-      // (1602) oooh Remember to return the saved person,
-      // kinda glad to have checked my previous notes hah
       return person.save().then(updatedPerson => {
         response.json(updatedPerson)
       })
