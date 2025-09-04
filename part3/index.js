@@ -4,9 +4,8 @@ const Note = require('./models/note')
 
 const app = express()
 
-// (1314) okay interesting, setting cors up before the 
-// static dist fixed cross origin api route errors!
-// nice to know *how* the order matters here
+// (1419) also gonna delete cors from here on since our
+// proxy was already set up with our frontend dist build
 // const cors = require('cors')
 // const corsOptions = {
 //  origin: 'http://localhost:5173',
@@ -34,27 +33,19 @@ app.get('/api/notes', (request, response) => {
   })
 })
 
-// (1334) okay great, we have a 404 error on the browser now!
-// (1335) and a malformatted id message sent, with a 400 code
-// (1336) great things to note; make sure you're working with
-// the Right Endpoint, and there's a difference between: 
-// end() - localhost page cannot be found 404
-// send() - json message attached to an error page
-app.get('/api/notes/:id', (request, response) => {
+// (1417) ahh the middleware makes error handling much more
+// clean when separate from endpoint functionality, def gon
+// help me avoid that wrong endpoint snafu earlier lmao
+app.get('/api/notes/:id', (request, response, next) => {
   Note.findById(request.params.id)
     .then(note => {
       if (note) {
         response.json(note)
       } else {
-        console.log('a 404 error should show up here')
         response.status(404).end()
       }
     })
-    .catch(error => {
-      console.log(error)
-      response.status(400).send({ error: 'malformatted id' })
-      console.log('we have sent a response status')
-    })
+    .catch(error => next(error))
 })
 
 app.post('/api/notes', (request, response) => {
@@ -76,17 +67,6 @@ app.post('/api/notes', (request, response) => {
   })
 })
 
-// (1302) set up error handling AND findById, nice
-// (1306) inital code 500 changed to 400, due to Invalid id Format
-// (1317) okay wait, once an error is hit, the whole server fails
-// to run again, so why? because it's an error .Send() not .End()
-// (1320) lmao that small s in send is subtle, but can we get a code?
-// (1322) oh WOW the params in the route handler didn't line up
-// with the function body, but it still worked? that's weird...
-// (1331) omFG i've been working on the wrong endpoint...
-// it's supposed to be on app.get, not app delete, whoops...
-// (1333) well i'mma leave this here cuz we're gonna get here
-// in the first exercise of this last set for 3c
 app.delete('/api/notes/:id', (request, response) => {
   Note.findById(request.params.id)
     // .then(note => {
@@ -106,10 +86,21 @@ app.delete('/api/notes/:id', (request, response) => {
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
-  console.log('we have sent a response status')
 }
 
 app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
