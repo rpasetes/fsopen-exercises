@@ -7,8 +7,6 @@ const Person = require('./models/person')
 app.use(express.static('dist'))
 
 const cors = require('cors')
-// (1550) lmao idk wtf this is doing here
-// const person = require('./models/person')
 const corsOptions = {
   host: 'http://localhost:5173',
   optionsSuccessStatus: 200
@@ -22,11 +20,6 @@ morgan.token('body', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-// (1549) oh also deleting this now we have a frontend dist build
-// app.get('/', (request, response) => {
-//   response.send('<h1>Hello World!</h1>')
-// })
-
 app.get('/info', (request, response) => {
   response.send(`
     <p>Phonebook has info for ${contacts.length} people</p>
@@ -39,23 +32,6 @@ app.get('/api/persons', (request, response, next) => {
     .then(people => {
       response.json(people)
     })
-    .catch(error => next(error))
-})
-
-app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const contact = contacts.find(c => c.id === id)
-
-  if (!contact) { return response.status(404).end() }
-  response.json(contact)
-})
-
-app.delete('/api/persons/:id', (request, response, next) => {
-  Person.findByIdAndDelete(request.params.id)
-  .then(result => {
-    response.status(204).end()
-  })
-    // (1552) yea boop so simple
     .catch(error => next(error))
 })
 
@@ -80,7 +56,45 @@ app.post('/api/persons', (request, response) => {
   })
 })
 
-// (1551) aight useful tech, set me up well for catching bugs;
+app.get('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  const contact = contacts.find(c => c.id === id)
+
+  if (!contact) { return response.status(404).end() }
+  response.json(contact)
+})
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+  // (1556) good catch! retrieving the updated data from body
+  const { name, number } = request.body
+  
+  Person.findByIdAndUpdate(request.params.id)
+    .then(person => {
+      // (1606) lmao oops put (!note) not (!person)
+      if (!person) {
+        return response.status(404).end()
+      }
+
+      person.name = name
+      person.number = number
+
+      // (1602) oooh Remember to return the saved person,
+      // kinda glad to have checked my previous notes hah
+      return person.save().then(updatedPerson => {
+        response.json(updatedPerson)
+      })
+    })
+    .catch(error => next(error))
+})
+
 const errorHandler = (error, request, response, next) => {
   console.error(error)
 
