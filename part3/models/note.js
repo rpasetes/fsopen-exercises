@@ -2,17 +2,8 @@ const mongoose = require('mongoose')
 
 mongoose.set('strictQuery',false)
 
-// (1242) to be initially passed in with:
-// MONGODB_URI="connection_string_here" npm run dev 
 const url = process.env.MONGODB_URI
 
-/* taken from index.js
-mongodb+srv://russap01_db_user:${password}@cluster0.
-dccws8n.mongodb.net/noteApp?retryWrites=true&w=majority
-&appName=Cluster0
-*/
-
-// (1243) yea we adding connection logging now boiiiii
 console.log('connecting to', url)
 mongoose.connect(url)
   .then(result => {
@@ -22,8 +13,13 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
+// (0928) real nice how validation can be handled by db
 const noteSchema = new mongoose.Schema({
-  content: String,
+  content: {
+    type: String,
+    minLength: 5,
+    required: true
+  },
   important: Boolean,
 })
 
@@ -35,5 +31,4 @@ noteSchema.set('toJSON', {
   }
 })
 
-// (1244) different from 'export default' in frontend 
 module.exports = mongoose.model('Note', noteSchema)
