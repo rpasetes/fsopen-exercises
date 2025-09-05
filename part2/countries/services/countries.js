@@ -1,9 +1,8 @@
 import axios from 'axios'
 
 const baseUrl = 'https://studies.cs.helsinki.fi/restcountries/api'
+const api_key = import.meta.env.VITE_API_KEY
 
-// (1146) let's handle data massaging at the service level
-// (1150) remember to reference response.data before massaging
 const getAll = (search) => {
   const request = axios.get(`${baseUrl}/all`)
   return request.then(response => {
@@ -13,7 +12,6 @@ const getAll = (search) => {
   })
 }
 
-// (1748) aight straightforward
 const getCountryData = (country) => {
   const request = axios.get(`${baseUrl}/name/${country}`)
   return request.then(response => {
@@ -21,4 +19,20 @@ const getCountryData = (country) => {
   })
 }
 
-export default { getAll, getCountryData }
+// (2114) okay getting a 401 bad request
+// (2144) omg FINALLY WE CAN PASS THE DATA
+const getWeatherData = (latlng) => {
+  const [lat, lng] = latlng
+  console.log(`retrieving weather for lat ${lat} lng ${lng}`)
+  console.log('with key', api_key)
+  const request = axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lng}&exclude=hourly,daily,minutely,alerts&units=metric&appid=${api_key}`)
+
+  return request.then(response => {
+    // console.log(response.data.current)
+    return response.data.current
+  }).catch(error => {
+    console.log(error)
+  })
+}
+
+export default { getAll, getCountryData, getWeatherData }
