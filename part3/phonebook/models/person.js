@@ -12,17 +12,6 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
-// (1111) sweet we working with regex for the validation
-// (1119) ugh i guess i have to update the data with new
-// numbers... unless the validators don't check entries
-// already in the server...
-// (1149) oh WOW, today i learned about Regex Anchors!
-// this allows the validation to match strs completely
-// rather than finding a substring match. this'll help
-// a ton in making the phone numbers only use one dash
-// (1155) figured i'd also make a helpful error msg,,,
-// (1201) PHEW and we didn't even need to change the
-// backend or the frontend. let's fucken SHIP
 const personSchema = new mongoose.Schema({
   name: {
     type: String,

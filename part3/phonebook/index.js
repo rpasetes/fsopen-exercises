@@ -42,14 +42,7 @@ app.get('/api/persons', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
   console.log('receiving request data:', body)
-  
-  // (1050) now moving validation to db + errorHandler!
-  // if (!body.name || !body.number) {
-  //   return response.status(400).json({
-  //     error: 'name or number missing'
-  //   })
-  // }
-  
+
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -101,8 +94,6 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-// (1056) hell yea now we also returning the error msg json
-// this'll make the frontend way easier to make serviceable
 const errorHandler = (error, request, response, next) => {
   console.error(error)
 

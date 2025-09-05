@@ -1,9 +1,3 @@
-// (1148) damn that was fuckin' straightforward! good returns yall
-// notes: checking equality for process.argv.length to guard missing data
-// changed appname to specify phonebook in mongo url
-// Remember: run mongoose.connection.close *within* .then() event handler!
-// but tbh great work, SHIP!
-
 const mongoose = require('mongoose')
 
 if (process.argv.length === 2) {
