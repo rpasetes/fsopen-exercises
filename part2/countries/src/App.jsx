@@ -10,8 +10,7 @@ const CountryToggle = ({ country, onToggle }) => {
   )
 }
 
-// (0636) aight we have rendering order issues, let's separate
-const Country = ({ countryData, weatherData }) => {
+const Country = ({ countryData }) => {
   console.log(countryData)
   console.log('languages', Object.values(countryData.languages))
 
@@ -46,8 +45,6 @@ const Weather = ({ weatherData }) => {
   )
 }
 
-// (0655) phew waking up early to debug this felt GREAT
-// and NOW,,, WE ARE DONE with PART TWO LETS FUCKEN GO! 
 function App() {
   const [countries, setCountries] = useState(null)
   const [country, setCountry] = useState(null)
@@ -99,9 +96,6 @@ function App() {
       return country.toLowerCase().includes(newQuery.toLowerCase())
     })
     console.log('new filteredCountries', filteredCountries)
-    // (0650) oKAY we always need to setFilteredCountries
-    // outside of the single country check,, otherwise the 
-    // state is decoupled from our render logic. bug crushed
     setFilteredCountries(filteredCountries)
 
     if (filteredCountries.length === 1) {
@@ -117,7 +111,6 @@ function App() {
       <input value={query} onChange={handleQuery} />
       {(filteredCountries.length > 10)
         ? 'Too many matches, specify another filter'
-        // (0653) safe precaution to only render upon data load
         : (countryData && weatherData)
         ? <div>
             <Country countryData={countryData} />

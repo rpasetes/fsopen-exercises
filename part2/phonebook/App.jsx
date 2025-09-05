@@ -5,8 +5,6 @@ import ContactForm from './components/ContactForm'
 import Contacts from './components/Contacts'
 import contactService from './services/contacts'
 
-// (1102) okay now we're back to frontend dev instance
-// i can turn the proxy back on to access our backend.
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('type new name...')
@@ -82,14 +80,11 @@ const App = () => {
           setMessage(null)
         }, 5000)
       })
-      // (1104) sweet we caught the error, now to send the
-      // message to our Notification component.
-      // (1105) aight we fucken display it WE SHIP BABYYYY
-      // (1106) omg and we even cover all the other validation
-      // errors, by gawd my errorHandler is wonderful!
       .catch(error => {
-        // console.log(error.response.data.error)
         setMessage(error.response.data.error)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
   }
 
@@ -98,20 +93,11 @@ const App = () => {
       console.log(`removing ${person.name}`)
       contactService
         .remove(person.id)
-        // (1047) okay cool now we debugging backend communication...
-        // (1048) aight, so there's no id to filter in 'deletedContact',
-        // (1050) hmm so the backend isn't designed to respond a deleted
-        // id, so might as well just handle it here in the frontend...
-        // (1053) okay 204 delete success returned is enough confirmation
-        // might as well style it for fun... ehh let's do that later...
-        // (1055) honestly, this is good enough backend to frontend work, SHIP!
         .then(() => {
-          // console.log('deleted contact from backend:', deletedContact)
           setPersons(persons.filter(contact => contact.id !== person.id))
         })
         .catch(error => {
-          console.log(error)
-          setMessage(`Information of ${match.name} has already been removed from server`)
+          setMessage(error.response.data.error)
           setPersons(persons.filter(p => p.name !== person.name))
           setTimeout(() => {
             setMessage(null)

@@ -17,7 +17,6 @@ const requestLogger = (request, response, next) => {
 app.use(express.json())
 app.use(requestLogger)
 
-// (0944) and once again the error handler comes in clutch
 app.post('/api/notes', (request, response, next) => {
   const body = request.body
 
@@ -84,8 +83,6 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-// (0945) oooh interesting, we returning a json of the err.msg
-// (0948) yay we got a msg: Note validation failed: content...
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 

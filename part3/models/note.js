@@ -13,7 +13,6 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
-// (0928) real nice how validation can be handled by db
 const noteSchema = new mongoose.Schema({
   content: {
     type: String,
