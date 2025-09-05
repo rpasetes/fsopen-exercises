@@ -6,12 +6,12 @@ export default defineConfig({
   plugins: [react()],
   // (1031) using server proxy over cors for part3 backend
   // (1035) but first let's make sure cors works...
-  // server: {
-  //   proxy: {
-  //     '/api': {
-  //       target:'http://localhost:3001',
-  //       changeOrigin: true
-  //     }
-  //   }
-  // }
+  server: {
+    proxy: {
+      '/api': {
+        target:'http://localhost:3001',
+        changeOrigin: true
+      }
+    }
+  }
 })

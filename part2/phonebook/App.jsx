@@ -5,6 +5,8 @@ import ContactForm from './components/ContactForm'
 import Contacts from './components/Contacts'
 import contactService from './services/contacts'
 
+// (1102) okay now we're back to frontend dev instance
+// i can turn the proxy back on to access our backend.
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('type new name...')
@@ -79,6 +81,15 @@ const App = () => {
         setTimeout(() => {
           setMessage(null)
         }, 5000)
+      })
+      // (1104) sweet we caught the error, now to send the
+      // message to our Notification component.
+      // (1105) aight we fucken display it WE SHIP BABYYYY
+      // (1106) omg and we even cover all the other validation
+      // errors, by gawd my errorHandler is wonderful!
+      .catch(error => {
+        // console.log(error.response.data.error)
+        setMessage(error.response.data.error)
       })
   }
 

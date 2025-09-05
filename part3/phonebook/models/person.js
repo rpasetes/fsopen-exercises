@@ -12,12 +12,20 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
+// (1046) starting simple validation for names
+// (1052) oh yea i can just require the fields here too
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    required: true
+  },
 })
 
-// (1324) remembering to shape data for frontend
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()

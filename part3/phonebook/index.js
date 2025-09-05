@@ -20,10 +20,6 @@ morgan.token('body', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-// (1616) oh huh what are we gonna do for contact length...
-// (1617) ahh wait, just find all the entries, then shape
-// the response according to the result of the model call
-// (1620) YOOO and it works let's blaze it and SHIP
 app.get('/info', (request, response, next) => {
   Person.find({})
     .then(people => {
@@ -33,10 +29,6 @@ app.get('/info', (request, response, next) => {
       `)
     })
     .catch(error => error(next))
-  // response.send(`
-  //   <p>Phonebook has info for ${contacts.length} people</p>
-  //   <p>${new Date(Date.now())}</p>
-  // `)
 })
 
 app.get('/api/persons', (request, response, next) => {
@@ -47,15 +39,16 @@ app.get('/api/persons', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
   console.log('receiving request data:', body)
   
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'name or number missing'
-    })
-  }
+  // (1050) now moving validation to db + errorHandler!
+  // if (!body.name || !body.number) {
+  //   return response.status(400).json({
+  //     error: 'name or number missing'
+  //   })
+  // }
   
   const person = new Person({
     name: body.name,
@@ -66,9 +59,9 @@ app.post('/api/persons', (request, response) => {
     console.log(`added ${body.name} number ${body.number} to phonebook`)
     response.json(people)
   })
+  .catch(error => next(error))
 })
 
-// (1615) phew OMFG vscode rest request handling like BUTTER
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then(person => {
@@ -108,13 +101,15 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+// (1056) hell yea now we also returning the error msg json
+// this'll make the frontend way easier to make serviceable
 const errorHandler = (error, request, response, next) => {
   console.error(error)
 
-  // (1547) will be useful for next exercise, changing
-  // all the '/api/person/:id' routes to access our db
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
