@@ -15,8 +15,8 @@ app.use(cors(corsOptions))
 
 app.use(express.json())
 
-morgan.token('body', (req, res) => { 
-  return JSON.stringify(req.body)
+morgan.token('body', (request) => {
+  return JSON.stringify(request.body)
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
@@ -52,7 +52,7 @@ app.post('/api/persons', (request, response, next) => {
     console.log(`added ${body.name} number ${body.number} to phonebook`)
     response.json(people)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -69,7 +69,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -77,7 +77,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
-  
+
   Person.findByIdAndUpdate(request.params.id)
     .then(person => {
       if (!person) {

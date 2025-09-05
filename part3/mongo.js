@@ -3,7 +3,7 @@
 const mongoose = require('mongoose')
 
 // (1048) taking in command > `node mongo.js yourPassword`
-// (1051) changed pw to remove url encoding special characters 
+// (1051) changed pw to remove url encoding special characters
 if (process.argv.length < 3) {
   console.log('give password as argument')
   process.exit(1)
@@ -12,7 +12,7 @@ if (process.argv.length < 3) {
 const password = process.argv[2]
 
 // (1054) changing network access to include all IP addresses
-// (1058) modifying uri to change db name reference to 'mongodb.net/noteApp?...' 
+// (1058) modifying uri to change db name reference to 'mongodb.net/noteApp?...'
 const url =
 `mongodb+srv://russap01_db_user:${password}@cluster0.dccws8n.mongodb.net/noteApp?
 retryWrites=true&w=majority&appName=Cluster0`

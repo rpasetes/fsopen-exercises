@@ -7,7 +7,7 @@ if (process.argv.length === 2) {
 
 const password = process.argv[2]
 
-const url = 
+const url =
 `mongodb+srv://russap01_db_user:${password}@cluster0.dccws8n.mongodb.net/phonebookApp?
 retryWrites=true&w=majority&appName=Cluster0`
 
@@ -46,7 +46,7 @@ if (process.argv.length === 5) {
     number: newNumber,
   })
 
-  person.save().then(result => {
+  person.save().then(() => {
     console.log(`added ${newName} number ${newNumber} to phonebook`)
     mongoose.connection.close()
   })
