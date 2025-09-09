@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/notes/68b876bb68f7a5b0684497af
+Content-Type: application/json
+
+{
+  "content": "This is a frontend note to MongoDB",
+  "important": true 
+}
