@@ -1,12 +1,16 @@
 {
   "name": "backend",
   "version": "0.0.1",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "start": "node dist/index.js",
     "test": "echo \"Error: not test specified\" && exit 1",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "build:ui": "rm -rf dist && cd ../../frontend-sandbox && npm run build && cp -r dist ../fsopen-exercises/part3",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
@@ -21,8 +25,19 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
-    "@stylistic/eslint-plugin-js": "^4.4.1",
+    "@stylistic/eslint-plugin-js": "^2.13.0",
+    "@stylistic/eslint-plugin-ts": "^2.13.0",
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.3",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^24.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
     "eslint": "^9.35.0",
-    "globals": "^16.3.0"
+    "globals": "^16.3.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   }
 }

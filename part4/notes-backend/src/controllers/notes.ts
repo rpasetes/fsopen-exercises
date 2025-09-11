@@ -1,11 +1,9 @@
-// (1309) built-in Express object, an isolated instance
-// considered a middleware for defining related routes
-const notesRouter = require('express').Router()
-const Note = require('../models/note')
+// (1814) changing the imports also made all the
+// type errors go away too? that's crazy
+import { Router } from 'express'
+import Note from '../models/note'
+const notesRouter = Router()
 
-// (1305) updating route handlers from index.js:
-// start by naming app.get() -> notesRouter.get()
-// then change route to '/api/notes/...' -> '/...'
 notesRouter.post('/', (request, response, next) => {
   const body = request.body
 
@@ -47,24 +45,25 @@ notesRouter.delete('/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-notesRouter.put('/:id', (request, response, next) => {
-  const { content, important } = request.body
+// (sep11;1813) DAMN REALLY async await solves my ts problems?
+// wow dude i gotta get on this clean promise syntax more...
+notesRouter.put('/:id', async (request, response, next) => {
+  try {
+    const { content, important } = request.body
 
-  Note.findById(request.params.id)
-    .then(note => {
-      if (!note) {
-        return response.status(404).end()
-      }
+    const note = await Note.findById(request.params.id)
+    if (!note) {
+      return response.status(404).end()
+    }
 
-      note.content = content
-      note.important = important
+    note.content = content
+    note.important = important
 
-      return note.save().then((updatedNote) => {
-        response.json(updatedNote)
-      })
-    })
-    .catch(error => next(error))
+    const updatedNote = await note.save()
+    response.json(updatedNote)
+  } catch (error) {
+    next(error)
+  }
 })
 
-// (1350) whoops, Remember to export the notesRouter!
-module.exports = notesRouter
+export default notesRouter
