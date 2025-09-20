@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Money & Wisdom: 4 Stances",
+  "author": "River Kenna",
+  "url": "https://innerwilds.blog/p/money-and-wisdom-4-stances",
+  "likes": 1
+}
